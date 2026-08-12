@@ -1,0 +1,12 @@
+# Dépendances Node.js
+node_modules/
+.next/
+
+# Dépendances Python
+venv/
+__pycache__/
+*.pyc
+
+# Variables d'environnement (TRÈS IMPORTANT)
+.env
+.env.local

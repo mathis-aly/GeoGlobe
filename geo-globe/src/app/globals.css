@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Bordures biseautées style "Cyberpunk / Sci-Fi" */
+.clip-beveled {
+  clip-path: polygon(
+    12px 0, 
+    100% 0, 
+    100% calc(100% - 12px), 
+    calc(100% - 12px) 100%, 
+    0 100%, 
+    0 12px
+  );
+}
+
+/* Petite variante pour des biseaux plus fins sur les petits boutons */
+.clip-beveled-sm {
+  clip-path: polygon(
+    6px 0, 
+    100% 0, 
+    100% calc(100% - 6px), 
+    calc(100% - 6px) 100%, 
+    0 100%, 
+    0 6px
+  );
+}
+
+/* Ajout d'une scrollbar futuriste discrète */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(8, 145, 178, 0.05); /* Cyan très léger */
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.4); /* Cyan dominant */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.8);
+}
+
+/* Topographie Holographique (Contours) */
+.bg-topography {
+  background-color: #030712;
+  /* Superposition de 3 couches de courbes pour créer l'illusion topographique */
+  background-image: 
+    repeating-radial-gradient(circle at 15% 50%, rgba(6, 182, 212, 0.04) 0, rgba(6, 182, 212, 0.04) 1px, transparent 1px, transparent 40px),
+    repeating-radial-gradient(circle at 85% 30%, rgba(6, 182, 212, 0.03) 0, rgba(6, 182, 212, 0.03) 1px, transparent 1px, transparent 60px),
+    repeating-radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.02) 0, rgba(16, 185, 129, 0.02) 1px, transparent 1px, transparent 80px);
+  background-size: 150vw 150vh, 120vw 120vh, 200vw 200vh;
+  background-repeat: no-repeat;
+  /* Le lent balayage pour animer les courbes de niveau */
+  animation: topoMove 45s ease-in-out infinite alternate;
+}
+
+@keyframes topoMove {
+  0% {
+    background-position: 0% 0%, 0% 0%, 0% 0%;
+  }
+  100% {
+    background-position: -15% -10%, 10% 15%, 5% -10%;
+  }
+}
+
+/* L'effet Scanlines est conservé pour la texture d'écran */
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 50;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+/* Surcharge des popups Leaflet pour le mode Cyber */
+.cyber-popup .leaflet-popup-content-wrapper,
+.cyber-popup .leaflet-popup-tip {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}
+.cyber-popup .leaflet-popup-content {
+  margin: 0 !important;
+}
+.cyber-popup .leaflet-popup-close-button {
+  display: none !important; /* On cache la petite croix de base, pas esthétique */
+}

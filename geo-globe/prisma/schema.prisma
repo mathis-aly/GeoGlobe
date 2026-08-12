@@ -1,0 +1,131 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Country {
+  id          String   @id // Code ISO (ex: "CHN")
+  name        String
+  description String?
+  
+  // Coordonnées pour le centre du pays
+  lat         Float?
+  lng         Float?
+  
+  // NOUVEAUX CHAMPS À AJOUTER :
+  population  Float?
+  gdp         Float?
+  
+  // Relations commerciales
+  exports     TradeRoute[] @relation("ExportRelation")
+  imports     TradeRoute[] @relation("ImportRelation")
+
+  // NOUVELLES RELATIONS POUR L'ANALYSE NATIONALE
+  articles          Article[]
+  pointsOfInterest  PointOfInterest[]
+
+  // Relations diplomatiques
+  diplomaticMissions DiplomaticRelation[] @relation("MissionSender")
+  hostedMissions     DiplomaticRelation[] @relation("MissionHost")
+
+  alliances   Alliance[] @relation("AllianceMembers")
+
+  resources   CountryResource[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TradeRoute {
+  id          String   @id @default(uuid())
+  sourceId    String
+  targetId    String
+  
+  source      Country  @relation("ExportRelation", fields: [sourceId], references: [id])
+  target      Country  @relation("ImportRelation", fields: [targetId], references: [id])
+}
+
+model DiplomaticRelation {
+  id       String  @id @default(uuid())
+  sourceId String
+  targetId String
+  type     String  // ex: "Ambassade" ou "Consulat"
+  count    Int     @default(1)
+
+  source   Country @relation("MissionSender", fields: [sourceId], references: [id])
+  target   Country @relation("MissionHost", fields: [targetId], references: [id])
+}
+
+model Alliance {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?
+  color       String    @default("#ffffff")
+  
+  // NOUVEAUX CHAMPS (Types cumulables)
+  isEconomic  Boolean   @default(false)
+  isPolitical Boolean   @default(false)
+  isMilitary  Boolean   @default(false)
+
+  members     Country[] @relation("AllianceMembers")
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Resource {
+  id        String   @id @default(uuid())
+  name      String   @unique // ex: "Terres Rares", "Pétrole"
+  category  String   // ex: "ENERGY", "TECH", "FOOD"
+  unit      String   // ex: "Tonnes", "Millions de barils"
+  color     String   // ex: "#ef4444" pour l'énergie, "#10b981" pour l'agriculture
+
+  countries CountryResource[]
+}
+
+// Table intermédiaire pour lier un pays à une ressource avec un volume spécifique
+model CountryResource {
+  id         String   @id @default(uuid())
+  countryId  String
+  resourceId String
+  volume     Float    // La quantité produite
+
+  country    Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  // On s'assure qu'un pays ne peut pas avoir deux entrées pour la même ressource
+  @@unique([countryId, resourceId])
+}
+
+// Modèle pour classer les trouvailles et sources internet
+model Article {
+  id          String   @id @default(uuid())
+  countryId   String
+  title       String
+  url         String
+  category    String   // Ex: "ECONOMY", "HISTORY", "POLITICS", "TECH"
+  summary     String?  @default("") // Petit bloc-notes pour résumer l'article
+  
+  createdAt   DateTime @default(now())
+
+  country     Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+}
+
+// Modèle pour la carte 2D (Villes, Ports, Centrales, etc.)
+model PointOfInterest {
+  id          String   @id @default(uuid())
+  countryId   String
+  name        String
+  type        String   // Ex: "CITY", "PORT", "AIRPORT", "POWER_PLANT", "RAILWAY_STATION"
+  lat         Float
+  lng         Float
+  value       Float?   // Ex: Population pour une ville, Megawatts pour une centrale
+  details     String?  // Informations complémentaires
+
+  country     Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+}
