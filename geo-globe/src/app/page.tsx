@@ -3,6 +3,7 @@ import CountrySidePanel from '@/components/features/CountrySidePanel'; // <-- No
 import TopSearchBar from '@/components/features/TopSearchBar'; // <-- NOUVEL IMPORT
 import ResourceSidePanel from '@/components/features/ResourceSidePanel'; // <-- NOUVEL IMPORT
 import TelemetryHUD from '@/components/ui/TelemetryHUD';
+import AgentTerminal from '@/components/features/AgentTerminal';
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
       <CountrySidePanel />
       {/* NOUVEAU : Le HUD de télémétrie */}
       <TelemetryHUD />
+      <AgentTerminal currentIso="FRA"/>
     </main>
   );
 }
